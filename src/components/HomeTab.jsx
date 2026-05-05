@@ -15,13 +15,8 @@ export default function HomeTab({
   setScoreVersion,
 }) {
   const [showCheckIn, setShowCheckIn] = useState(false);
-  const [checkInValue, setCheckInValue] = useState(null);
-
-  const scoreColor =
-    score >= 80 ? T.green : score >= 60 ? T.accent : score >= 40 ? T.accentLight : T.muted;
 
   async function handleCheckIn(val) {
-    setCheckInValue(val);
     setWeeklyRating(val);
     await onCheckIn(val);
     setShowCheckIn(false);
@@ -37,7 +32,7 @@ export default function HomeTab({
         </div>
         {tip ? (
           <div style={{ ...css.card, borderLeft: `3px solid ${T.accentLight}` }}>
-            <p style={{ fontSize: 15, lineHeight: 1.75, color: T.text, fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: 18, marginBottom: 16 }}>
+            <p style={{ lineHeight: 1.75, color: T.text, fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: 18, marginBottom: 16 }}>
               {tip.content}
             </p>
             {!tipRated && (
