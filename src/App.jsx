@@ -212,7 +212,6 @@ function OnboardingScreen({ onDone, currentUser }) {
 // ─── MAIN APP ────────────────────────────────────────────────
 
 function MainApp({ userData }) {
-  const displayName = userData?.name || "you";
 
   const [tab, setTab] = useState("home");
   const [currentUser, setCurrentUser] = useState(null);
