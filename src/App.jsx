@@ -42,8 +42,8 @@ function LoginScreen() {
           GoddessGrounded
         </div>
         <div style={{ fontSize: 13, color: T.muted, letterSpacing: 1, lineHeight: 1.6 }}>
-          You can't truly reconnect with him<br />
-          if you forgot how to connect with yourself.
+          The most important relationship<br />
+          you'll ever have is the one with yourself.
         </div>
       </div>
 
@@ -104,8 +104,15 @@ function LoginScreen() {
 
 function OnboardingScreen({ onDone, currentUser }) {
   const [step, setStep] = useState(0);
-  const [data, setData] = useState({ name: "", partnerName: "" });
+  const [data, setData] = useState({ name: "", journey: "", partnerName: "" });
   const [saving, setSaving] = useState(false);
+
+  // Steps depend on journey choice
+  // Step 0: name
+  // Step 1: journey choice
+  // Step 2: partner name (only if journey = 'relationship')
+  const totalSteps = data.journey === "relationship" ? 3 : 2;
+  const isLast = step === totalSteps - 1;
 
   async function saveAndContinue() {
     setSaving(true);
@@ -124,87 +131,194 @@ function OnboardingScreen({ onDone, currentUser }) {
       await supabase.from("user_preferences").upsert({
         user_id: user.id,
         display_name: data.name,
-        partner_name: data.partnerName || null,
+        journey: data.journey || "self",
+        partner_name: data.journey === "relationship" ? (data.partnerName || null) : null,
       }, { onConflict: "user_id" });
     }
     setSaving(false);
     onDone(data);
   }
 
-  const steps = [
-    {
-      emoji: "🌸",
-      title: "Welcome. Let's begin.",
-      subtitle: "A few questions to make this yours. Takes less than a minute.",
-      field: (
-        <>
-          <label style={css.label}>What's your name?</label>
-          <input
-            style={css.input}
-            placeholder="e.g. Sophie"
-            value={data.name}
-            onChange={(e) => setData((d) => ({ ...d, name: e.target.value }))}
-          />
-        </>
-      ),
-      canNext: data.name.length > 0,
-    },
-    {
-      emoji: "🌿",
-      title: "Your partner",
-      subtitle: "This helps us personalise your experience. You can skip this.",
-      field: (
-        <>
-          <label style={css.label}>His name (optional)</label>
-          <input
-            style={css.input}
-            placeholder="e.g. Tom"
-            value={data.partnerName}
-            onChange={(e) => setData((d) => ({ ...d, partnerName: e.target.value }))}
-          />
-          <button style={{ ...css.btnGhost, marginBottom: 12 }} onClick={() => setStep((s) => s + 1)}>
-            Skip
-          </button>
-        </>
-      ),
-      canNext: true,
-    },
-  ];
+  function handleNext() {
+    if (isLast) {
+      saveAndContinue();
+    } else {
+      // Skip partner name step if journey is 'self'
+      if (step === 1 && data.journey === "self") {
+        saveAndContinue();
+      } else {
+        setStep((s) => s + 1);
+      }
+    }
+  }
 
-  const current = steps[step];
-  const isLast = step === steps.length - 1;
-
-  return (
-    <div style={{ ...css.page, justifyContent: "center" }}>
-      <div style={{ display: "flex", gap: 6, justifyContent: "center", marginBottom: 40 }}>
-        {steps.map((_, i) => (
-          <div
-            key={i}
-            style={{
-              width: i === step ? 24 : 8,
-              height: 8,
-              borderRadius: 4,
-              background: i <= step ? T.accent : T.border,
-              transition: "all 0.3s ease",
-            }}
-          />
-        ))}
-      </div>
-      <div style={{ textAlign: "center", marginBottom: 32 }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>{current.emoji}</div>
-        <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 24, color: T.text, marginBottom: 8, fontStyle: "italic" }}>
-          {current.title}
+  // Step 0 — Name
+  if (step === 0) {
+    return (
+      <div style={{ ...css.page, justifyContent: "center" }}>
+        <StepIndicator current={0} total={totalSteps} />
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🌸</div>
+          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 24, color: T.text, marginBottom: 8, fontStyle: "italic" }}>
+            Welcome. Let's begin.
+          </div>
+          <div style={{ fontSize: 13, color: T.muted, lineHeight: 1.6 }}>
+            A few questions to make this yours. Takes less than a minute.
+          </div>
         </div>
-        <div style={{ fontSize: 13, color: T.muted, lineHeight: 1.6 }}>{current.subtitle}</div>
+        <label style={css.label}>What's your name?</label>
+        <input
+          style={css.input}
+          placeholder="e.g. Sophie"
+          value={data.name}
+          onChange={(e) => setData((d) => ({ ...d, name: e.target.value }))}
+        />
+        <button
+          style={{ ...css.btn, opacity: data.name.length > 0 ? 1 : 0.4 }}
+          onClick={() => data.name.length > 0 && setStep(1)}
+          disabled={data.name.length === 0}
+        >
+          Continue →
+        </button>
       </div>
-      {current.field}
-      <button
-        style={{ ...css.btn, opacity: current.canNext && !saving ? 1 : 0.4 }}
-        onClick={() => current.canNext && (isLast ? saveAndContinue() : setStep((s) => s + 1))}
-        disabled={!current.canNext || saving}
-      >
-        {saving ? "Saving..." : isLast ? "Let's begin →" : "Continue →"}
-      </button>
+    );
+  }
+
+  // Step 1 — Journey choice
+  if (step === 1) {
+    return (
+      <div style={{ ...css.page, justifyContent: "center" }}>
+        <StepIndicator current={1} total={totalSteps} />
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🌿</div>
+          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 24, color: T.text, marginBottom: 8, fontStyle: "italic" }}>
+            How would you like to use GoddessGrounded?
+          </div>
+          <div style={{ fontSize: 13, color: T.muted, lineHeight: 1.6 }}>
+            You can always change this in Settings.
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
+          <button
+            onClick={() => setData((d) => ({ ...d, journey: "self" }))}
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 16,
+              background: data.journey === "self" ? T.accentSoft : T.card,
+              border: `1px solid ${data.journey === "self" ? T.accent : T.border}`,
+              borderRadius: 14,
+              padding: "18px 20px",
+              cursor: "pointer",
+              textAlign: "left",
+              transition: "all 0.2s",
+            }}
+          >
+            <span style={{ fontSize: 28, flexShrink: 0 }}>🌿</span>
+            <div>
+              <div style={{ fontSize: 15, color: T.text, fontWeight: 500, marginBottom: 4 }}>
+                Just for me
+              </div>
+              <div style={{ fontSize: 13, color: T.muted, lineHeight: 1.5 }}>
+                Tips and reflections focused entirely on myself — no relationship context needed.
+              </div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setData((d) => ({ ...d, journey: "relationship" }))}
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 16,
+              background: data.journey === "relationship" ? T.accentSoft : T.card,
+              border: `1px solid ${data.journey === "relationship" ? T.accent : T.border}`,
+              borderRadius: 14,
+              padding: "18px 20px",
+              cursor: "pointer",
+              textAlign: "left",
+              transition: "all 0.2s",
+            }}
+          >
+            <span style={{ fontSize: 28, flexShrink: 0 }}>🌸</span>
+            <div>
+              <div style={{ fontSize: 15, color: T.text, fontWeight: 500, marginBottom: 4 }}>
+                Me and my relationship
+              </div>
+              <div style={{ fontSize: 13, color: T.muted, lineHeight: 1.5 }}>
+                Tips and reflections about staying grounded — within myself and within my relationship.
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <button
+          style={{ ...css.btn, opacity: data.journey ? 1 : 0.4 }}
+          onClick={() => data.journey && handleNext()}
+          disabled={!data.journey || saving}
+        >
+          {saving ? "Saving..." : data.journey === "self" ? "Let's begin →" : "Continue →"}
+        </button>
+      </div>
+    );
+  }
+
+  // Step 2 — Partner name (only for relationship journey)
+  if (step === 2 && data.journey === "relationship") {
+    return (
+      <div style={{ ...css.page, justifyContent: "center" }}>
+        <StepIndicator current={2} total={totalSteps} />
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>💛</div>
+          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 24, color: T.text, marginBottom: 8, fontStyle: "italic" }}>
+            Your partner
+          </div>
+          <div style={{ fontSize: 13, color: T.muted, lineHeight: 1.6 }}>
+            This helps us personalise your experience. You can skip this.
+          </div>
+        </div>
+        <label style={css.label}>His name (optional)</label>
+        <input
+          style={css.input}
+          placeholder="e.g. Tom"
+          value={data.partnerName}
+          onChange={(e) => setData((d) => ({ ...d, partnerName: e.target.value }))}
+        />
+        <button
+          style={{ ...css.btn, opacity: !saving ? 1 : 0.6 }}
+          onClick={handleNext}
+          disabled={saving}
+        >
+          {saving ? "Saving..." : "Let's begin →"}
+        </button>
+        <button style={{ ...css.btnGhost, marginTop: 10 }} onClick={() => { setData((d) => ({ ...d, partnerName: "" })); saveAndContinue(); }}>
+          Skip
+        </button>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+// ─── STEP INDICATOR ─────────────────────────────────────────
+
+function StepIndicator({ current, total }) {
+  return (
+    <div style={{ display: "flex", gap: 6, justifyContent: "center", marginBottom: 40 }}>
+      {Array.from({ length: total }).map((_, i) => (
+        <div
+          key={i}
+          style={{
+            width: i === current ? 24 : 8,
+            height: 8,
+            borderRadius: 4,
+            background: i <= current ? T.accent : T.border,
+            transition: "all 0.3s ease",
+          }}
+        />
+      ))}
     </div>
   );
 }
@@ -496,14 +610,18 @@ export default function GoddessGrounded() {
         setCurrentUser(session.user);
         const { data: prefs } = await supabase
           .from("user_preferences")
-          .select("display_name, partner_name, assessment_completed_at, onboarding_skipped_assessment")
+          .select("display_name, partner_name, journey, assessment_completed_at, onboarding_skipped_assessment")
           .eq("user_id", session.user.id)
           .maybeSingle();
 
         if (!prefs?.display_name) {
           setScreen("onboarding");
         } else {
-          setUserData({ name: prefs.display_name, partnerName: prefs.partner_name });
+          setUserData({
+            name: prefs.display_name,
+            partnerName: prefs.partner_name,
+            journey: prefs.journey || "self",
+          });
           const assessmentDone = prefs?.assessment_completed_at || prefs?.onboarding_skipped_assessment;
           setScreen(assessmentDone ? "app" : "assessment");
         }
