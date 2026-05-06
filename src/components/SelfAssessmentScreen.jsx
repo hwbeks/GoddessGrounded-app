@@ -6,19 +6,19 @@ const CATEGORIES = [
   {
     key: "self_connection",
     label: "Self connection",
-    question: "How connected do you feel to yourself in your relationship?",
-    sub: "Do you still know what you feel, want, and need?",
+    question: "How connected do you feel to yourself?",
+    sub: "Do you still know what you feel, want, and need — independent of others?",
   },
   {
     key: "self_awareness",
     label: "Self awareness",
     question: "How aware are you of the moments when you make yourself smaller?",
-    sub: "Do you notice when you adjust yourself to keep the peace?",
+    sub: "Do you notice when you adjust yourself to keep others comfortable?",
   },
   {
     key: "naming_needs",
     label: "Naming needs",
-    question: "How easily do you express what you need before it becomes resentment?",
+    question: "How easily do you express what you need?",
     sub: "Can you say what you need clearly and without guilt?",
   },
   {
@@ -30,7 +30,7 @@ const CATEGORIES = [
   {
     key: "identity",
     label: "Identity",
-    question: "How much space do you have for yourself outside the relationship?",
+    question: "How much space do you have for yourself?",
     sub: "Do you still have your own interests, friendships, and dreams?",
   },
   {
