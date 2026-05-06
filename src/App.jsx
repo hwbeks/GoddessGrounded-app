@@ -340,6 +340,8 @@ function MainApp({ userData }) {
   const [weeklyRating, setWeeklyRating] = useState(null);
   const [tipRated, setTipRated] = useState(false);
   const [notifyTipEmail, setNotifyTipEmail] = useState(false);
+  const [journey, setJourney] = useState(userData?.journey || "self");
+  const [partnerName, setPartnerName] = useState(userData?.partnerName || null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -563,6 +565,10 @@ function MainApp({ userData }) {
           currentUser={currentUser}
           notifyTipEmail={notifyTipEmail}
           setNotifyTipEmail={setNotifyTipEmail}
+          journey={journey}
+          setJourney={setJourney}
+          partnerName={partnerName}
+          setPartnerName={setPartnerName}
         />
       )}
 
