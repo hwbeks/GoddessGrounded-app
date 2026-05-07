@@ -3,10 +3,10 @@ import { T, css } from "./theme";
 import { useState, useEffect } from "react";
 import SelfAssessmentScreen from "./components/SelfAssessmentScreen";
 import HomeTab from "./components/HomeTab";
-import TipsTab from "./components/TipsTab";
+import ReflectTab from "./components/ReflectTab";
+import ForMeTab from "./components/ForMeTab";
 import GroundTab from "./components/GroundTab";
 import SettingsTab from "./components/SettingsTab";
-import JournalTab from "./components/JournalTab";
 import ErrorBoundary from "./components/ErrorBoundary";
 
 // ─── LOGIN ──────────────────────────────────────────────────
@@ -532,35 +532,29 @@ function MainApp({ userData }) {
       {tab === "home" && (
         <ErrorBoundary>
           <HomeTab
-            tip={dailyTip}
-            score={score}
             streak={streak}
-            partnerName={userData?.partnerName}
-            onCheckIn={handleCheckIn}
-            onRateTip={handleRateTip}
             weeklyRating={weeklyRating}
             setWeeklyRating={setWeeklyRating}
-            tipRated={tipRated}
-            setTipRated={setTipRated}
+            onCheckIn={handleCheckIn}
             setScoreVersion={setScoreVersion}
           />
         </ErrorBoundary>
       )}
 
-      {tab === "tips" && (
+      {tab === "reflect" && (
         <ErrorBoundary>
-          <TipsTab
+          <ReflectTab
             tips={tips}
             onRateTip={handleRateTip}
+            currentUser={currentUser}
           />
         </ErrorBoundary>
       )}
 
-      {tab === "journal" && (
+      {tab === "forme" && (
         <ErrorBoundary>
-          <JournalTab
+          <ForMeTab
             currentUser={currentUser}
-            journey={journey}
           />
         </ErrorBoundary>
       )}
@@ -596,8 +590,8 @@ function MainApp({ userData }) {
       <div style={css.nav}>
         {[
           { id: "home", icon: "🏠", label: "Home" },
-          { id: "tips", icon: "🌿", label: "Tips" },
-          { id: "journal", icon: "🍃", label: "Journal" },
+          { id: "reflect", icon: "🌿", label: "Reflect" },
+          { id: "forme", icon: "📅", label: "For me" },
           { id: "ground", icon: "🌳", label: "Ground" },
           { id: "settings", icon: "⚙️", label: "Settings" },
         ].map((n) => (
