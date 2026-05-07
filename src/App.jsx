@@ -338,9 +338,7 @@ function MainApp({ userData }) {
   const [longestStreak, setLongestStreak] = useState(0);
   const [assessment, setAssessment] = useState(null);
   const [tips, setTips] = useState([]);
-  const [dailyTip, setDailyTip] = useState(null);
   const [weeklyRating, setWeeklyRating] = useState(null);
-  const [tipRated, setTipRated] = useState(false);
   const [notifyTipEmail, setNotifyTipEmail] = useState(false);
   const [journey, setJourney] = useState(userData?.journey || "self");
   const [partnerName, setPartnerName] = useState(userData?.partnerName || null);
