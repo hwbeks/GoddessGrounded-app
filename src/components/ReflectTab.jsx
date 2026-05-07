@@ -42,11 +42,6 @@ function getTodayQuestion() {
   return QUESTIONS[diff % QUESTIONS.length];
 }
 
-function formatDate(dateStr) {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
-}
-
 const CATEGORY_LABELS = {
   self_connection: "Self connection",
   self_awareness: "Self awareness",
