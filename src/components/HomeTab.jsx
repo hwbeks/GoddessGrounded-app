@@ -1,17 +1,28 @@
 import { T, css } from "../theme";
 import { useState } from "react";
 
+const QUOTES = [
+  "You don't have to lose yourself to love someone.",
+  "The most grounded version of you is the one who knows herself well enough to give from a full place.",
+  "You are allowed to take up space.",
+  "Coming back to yourself is not selfish. It's necessary.",
+  "You can't pour from an empty cup — and you matter too.",
+  "Being grounded doesn't mean having it all figured out. It means knowing yourself well enough to notice.",
+  "You didn't become the easy one all at once. You can come back, one moment at a time.",
+];
+
+function getTodayQuote() {
+  const start = new Date("2026-01-01");
+  const today = new Date();
+  const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+  return QUOTES[diff % QUOTES.length];
+}
+
 export default function HomeTab({
-  tip,
-  score,
   streak,
-  partnerName,
-  onCheckIn,
-  onRateTip,
   weeklyRating,
   setWeeklyRating,
-  tipRated,
-  setTipRated,
+  onCheckIn,
   setScoreVersion,
 }) {
   const [showCheckIn, setShowCheckIn] = useState(false);
@@ -23,109 +34,74 @@ export default function HomeTab({
     setScoreVersion((v) => v + 1);
   }
 
+  const todayQuote = getTodayQuote();
+  const today = new Date().toLocaleDateString("en-GB", {
+    weekday: "long", day: "numeric", month: "long"
+  });
+
   return (
-    <div style={{ padding: "0 0 24px" }}>
-      {/* Daily intention */}
-      <div style={{ padding: "24px 24px 0", marginBottom: 24 }}>
-        <div style={{ fontSize: 10, letterSpacing: 5, textTransform: "uppercase", color: T.muted, marginBottom: 8 }}>
-          Today's intention
-        </div>
-        {tip ? (
-          <div style={{ ...css.card, borderLeft: `3px solid ${T.accentLight}` }}>
-            <p style={{ lineHeight: 1.75, color: T.text, fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: 18, marginBottom: 16 }}>
-              {tip.content}
-            </p>
-            {!tipRated && (
-              <div style={{ display: "flex", gap: 10 }}>
-                <button
-                  onClick={() => { onRateTip("up"); setTipRated(true); }}
-                  style={{
-                    flex: 1,
-                    background: T.accentSoft,
-                    border: `1px solid ${T.border}`,
-                    borderRadius: 10,
-                    padding: "11px 8px",
-                    fontSize: 12,
-                    fontFamily: "'Jost', sans-serif",
-                    fontWeight: 500,
-                    letterSpacing: 1,
-                    color: T.accentDark,
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                  }}
-                >
-                  This resonates
-                </button>
-                <button
-                  onClick={() => { onRateTip("down"); setTipRated(true); }}
-                  style={{
-                    flex: 1,
-                    background: "transparent",
-                    border: `1px solid ${T.border}`,
-                    borderRadius: 10,
-                    padding: "11px 8px",
-                    fontSize: 12,
-                    fontFamily: "'Jost', sans-serif",
-                    fontWeight: 300,
-                    letterSpacing: 1,
-                    color: T.muted,
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                  }}
-                >
-                  Not for me
-                </button>
-              </div>
-            )}
-            {tipRated && (
-              <div style={{ fontSize: 12, color: T.muted, textAlign: "center", letterSpacing: 2 }}>
-                Thank you for your reflection
-              </div>
-            )}
-          </div>
-        ) : (
-          <div style={{ ...css.card, textAlign: "center", color: T.muted, fontSize: 14, padding: "32px 24px" }}>
-            Your daily intention is on its way...
-          </div>
-        )}
+    <div style={{ padding: "0 24px 24px" }}>
+
+      {/* Date */}
+      <div style={{ fontSize: 11, color: T.muted, letterSpacing: 2, marginBottom: 32 }}>
+        {today}
       </div>
 
-      {/* Weekly check-in */}
-      <div style={{ padding: "0 24px", marginBottom: 24 }}>
-        <div style={{ fontSize: 10, letterSpacing: 5, textTransform: "uppercase", color: T.muted, marginBottom: 8 }}>
-          Weekly reflection
+      {/* Daily quote */}
+      <div style={{ marginBottom: 28 }}>
+        <p style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontStyle: "italic",
+          fontSize: clamp(22, 28),
+          lineHeight: 1.5,
+          color: T.accentDark,
+          marginBottom: 8,
+        }}>
+          "{todayQuote}"
+        </p>
+        <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: T.muted }}>
+          GoddessGrounded
         </div>
-        {!weeklyRating ? (
+      </div>
+
+      {/* Weekly check-in — only if not done */}
+      {!weeklyRating && (
+        <div style={{ marginBottom: 24 }}>
           <button
             onClick={() => setShowCheckIn(true)}
-            style={{ ...css.card, width: "100%", textAlign: "left", cursor: "pointer", border: `1px dashed ${T.accentLight}` }}
+            style={{
+              ...css.card,
+              width: "100%",
+              textAlign: "left",
+              cursor: "pointer",
+              border: `1px dashed ${T.accentLight}`,
+              background: T.warm,
+            }}
           >
-            <div style={{ fontSize: 14, color: T.accent, letterSpacing: 1 }}>How connected do you feel to yourself this week?</div>
-            <div style={{ fontSize: 11, color: T.muted, marginTop: 6, letterSpacing: 1 }}>Tap to reflect →</div>
+            <div style={{ fontSize: 14, color: T.accent, lineHeight: 1.6 }}>
+              How connected do you feel to yourself this week?
+            </div>
+            <div style={{ fontSize: 11, color: T.muted, marginTop: 6, letterSpacing: 1 }}>
+              Tap to reflect →
+            </div>
           </button>
-        ) : (
-          <div style={{ ...css.card, textAlign: "center" }}>
-            <div style={{ fontSize: 24, marginBottom: 8 }}>
-              {weeklyRating >= 4 ? "🌸" : weeklyRating === 3 ? "🌿" : weeklyRating === 2 ? "🌫️" : "🌧️"}
-            </div>
-            <div style={{ fontSize: 12, color: T.muted, letterSpacing: 2 }}>
-              {weeklyRating >= 4 ? "Deeply grounded" : weeklyRating === 3 ? "Finding my way" : weeklyRating === 2 ? "A little lost" : "Needing care"}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Grounding reminder */}
-      <div style={{ padding: "0 24px" }}>
-        <div style={{ ...css.card, background: T.warm, border: `1px solid ${T.border}` }}>
-          <div style={{ fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: T.muted, marginBottom: 8 }}>
-            Remember
-          </div>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: 17, color: T.accentDark, lineHeight: 1.6 }}>
-            "You don't have to lose yourself to love someone."
-          </p>
         </div>
-      </div>
+      )}
+
+      {/* Streak — only if > 3 */}
+      {streak > 3 && (
+        <div style={{ ...css.card, textAlign: "center" }}>
+          <div style={{ fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: T.muted, marginBottom: 8 }}>
+            You've shown up
+          </div>
+          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 32, color: T.accent, marginBottom: 4 }}>
+            {streak}
+          </div>
+          <div style={{ fontSize: 11, color: T.muted, letterSpacing: 2, textTransform: "uppercase" }}>
+            days in a row
+          </div>
+        </div>
+      )}
 
       {/* Check-in modal */}
       {showCheckIn && (
@@ -135,12 +111,12 @@ export default function HomeTab({
               How connected do you feel to yourself this week?
             </div>
             <div style={{ fontSize: 13, color: T.muted, marginBottom: 24, lineHeight: 1.6 }}>
-              Not to him, not to the relationship. To yourself.
+              Not to anyone else. To yourself.
             </div>
             {[
               { val: 4, emoji: "🌸", label: "Deeply grounded" },
               { val: 3, emoji: "🌿", label: "Finding my way" },
-              { val: 2, emoji: "🌫️", label: "A little lost" },
+              { val: 2, emoji: "🌱", label: "A little lost" },
               { val: 1, emoji: "🌧️", label: "Needing care" },
             ].map((opt) => (
               <button
@@ -172,4 +148,8 @@ export default function HomeTab({
       )}
     </div>
   );
+}
+
+function clamp(min, max) {
+  return `clamp(${min}px, 4vw, ${max}px)`;
 }
