@@ -573,6 +573,7 @@ function MainApp({ userData }) {
             assessment={assessment}
             streak={streak}
             longestStreak={longestStreak}
+            currentUser={currentUser}
           />
         </ErrorBoundary>
       )}
