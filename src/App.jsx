@@ -377,7 +377,6 @@ function MainApp({ userData }) {
         .limit(10);
       if (tipsData) {
         setTips(tipsData);
-        setDailyTip(tipsData[0] || null);
       }
 
       // Load weekly rating
