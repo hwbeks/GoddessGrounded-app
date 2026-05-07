@@ -65,15 +65,41 @@ export default function TipsTab({ tips, onRateTip }) {
             <div style={{ display: "flex", gap: 10 }}>
               <button
                 onClick={() => { onRateTip(tip.id, "up"); setRated((r) => ({ ...r, [tip.id]: "up" })); }}
-                style={{ flex: 1, background: T.accentSoft, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px", fontSize: 20, cursor: "pointer" }}
+                style={{
+                  flex: 1,
+                  background: T.accentSoft,
+                  border: `1px solid ${T.border}`,
+                  borderRadius: 10,
+                  padding: "11px 8px",
+                  fontSize: 12,
+                  fontFamily: "'Jost', sans-serif",
+                  fontWeight: 500,
+                  letterSpacing: 1,
+                  color: T.accentDark,
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
               >
-                🌿
+                This resonates
               </button>
               <button
                 onClick={() => { onRateTip(tip.id, "down"); setRated((r) => ({ ...r, [tip.id]: "down" })); }}
-                style={{ flex: 1, background: T.accentSoft, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px", fontSize: 20, cursor: "pointer" }}
+                style={{
+                  flex: 1,
+                  background: "transparent",
+                  border: `1px solid ${T.border}`,
+                  borderRadius: 10,
+                  padding: "11px 8px",
+                  fontSize: 12,
+                  fontFamily: "'Jost', sans-serif",
+                  fontWeight: 300,
+                  letterSpacing: 1,
+                  color: T.muted,
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
               >
-                🌫️
+                Not for me
               </button>
             </div>
           </div>
