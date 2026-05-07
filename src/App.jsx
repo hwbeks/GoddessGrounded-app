@@ -6,6 +6,7 @@ import HomeTab from "./components/HomeTab";
 import TipsTab from "./components/TipsTab";
 import GroundTab from "./components/GroundTab";
 import SettingsTab from "./components/SettingsTab";
+import JournalTab from "./components/JournalTab";
 
 // ─── LOGIN ──────────────────────────────────────────────────
 
@@ -550,6 +551,13 @@ function MainApp({ userData }) {
         />
       )}
 
+      {tab === "journal" && (
+        <JournalTab
+          currentUser={currentUser}
+          journey={journey}
+        />
+      )}
+
       {tab === "ground" && (
         <GroundTab
           score={score}
@@ -577,6 +585,7 @@ function MainApp({ userData }) {
         {[
           { id: "home", icon: "🏠", label: "Home" },
           { id: "tips", icon: "🌿", label: "Tips" },
+          { id: "journal", icon: "🍃", label: "Journal" },
           { id: "ground", icon: "🌳", label: "Ground" },
           { id: "settings", icon: "⚙️", label: "Settings" },
         ].map((n) => (
