@@ -7,6 +7,7 @@ import TipsTab from "./components/TipsTab";
 import GroundTab from "./components/GroundTab";
 import SettingsTab from "./components/SettingsTab";
 import JournalTab from "./components/JournalTab";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 // ─── LOGIN ──────────────────────────────────────────────────
 
@@ -529,55 +530,65 @@ function MainApp({ userData }) {
 
       {/* Tabs */}
       {tab === "home" && (
-        <HomeTab
-          tip={dailyTip}
-          score={score}
-          streak={streak}
-          partnerName={userData?.partnerName}
-          onCheckIn={handleCheckIn}
-          onRateTip={handleRateTip}
-          weeklyRating={weeklyRating}
-          setWeeklyRating={setWeeklyRating}
-          tipRated={tipRated}
-          setTipRated={setTipRated}
-          setScoreVersion={setScoreVersion}
-        />
+        <ErrorBoundary>
+          <HomeTab
+            tip={dailyTip}
+            score={score}
+            streak={streak}
+            partnerName={userData?.partnerName}
+            onCheckIn={handleCheckIn}
+            onRateTip={handleRateTip}
+            weeklyRating={weeklyRating}
+            setWeeklyRating={setWeeklyRating}
+            tipRated={tipRated}
+            setTipRated={setTipRated}
+            setScoreVersion={setScoreVersion}
+          />
+        </ErrorBoundary>
       )}
 
       {tab === "tips" && (
-        <TipsTab
-          tips={tips}
-          onRateTip={handleRateTip}
-        />
+        <ErrorBoundary>
+          <TipsTab
+            tips={tips}
+            onRateTip={handleRateTip}
+          />
+        </ErrorBoundary>
       )}
 
       {tab === "journal" && (
-        <JournalTab
-          currentUser={currentUser}
-          journey={journey}
-        />
+        <ErrorBoundary>
+          <JournalTab
+            currentUser={currentUser}
+            journey={journey}
+          />
+        </ErrorBoundary>
       )}
 
       {tab === "ground" && (
-        <GroundTab
-          score={score}
-          scoreLoaded={scoreLoaded}
-          assessment={assessment}
-          streak={streak}
-          longestStreak={longestStreak}
-        />
+        <ErrorBoundary>
+          <GroundTab
+            score={score}
+            scoreLoaded={scoreLoaded}
+            assessment={assessment}
+            streak={streak}
+            longestStreak={longestStreak}
+          />
+        </ErrorBoundary>
       )}
 
       {tab === "settings" && (
-        <SettingsTab
-          currentUser={currentUser}
-          notifyTipEmail={notifyTipEmail}
-          setNotifyTipEmail={setNotifyTipEmail}
-          journey={journey}
-          setJourney={setJourney}
-          partnerName={partnerName}
-          setPartnerName={setPartnerName}
-        />
+        <ErrorBoundary>
+          <SettingsTab
+            currentUser={currentUser}
+            notifyTipEmail={notifyTipEmail}
+            setNotifyTipEmail={setNotifyTipEmail}
+            journey={journey}
+            setJourney={setJourney}
+            partnerName={partnerName}
+            setPartnerName={setPartnerName}
+          />
+        </ErrorBoundary>
       )}
 
       {/* Bottom Nav */}
