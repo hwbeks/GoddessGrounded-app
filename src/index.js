@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import GoddessGrounded from "./App";
+import { Analytics } from "@vercel/analytics/react";
 
 // Google Fonts — Cormorant Garamond + Jost
 const link = document.createElement("link");
@@ -18,5 +19,14 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+function Root() {
+  return (
+    <>
+      <GoddessGrounded />
+      <Analytics />
+    </>
+  );
+}
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<GoddessGrounded />);
+root.render(<Root />);
