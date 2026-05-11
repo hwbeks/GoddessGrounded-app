@@ -145,7 +145,7 @@ function OnboardingScreen({ onDone, currentUser }) {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+              "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwcWJvaWZ1dmNxY3hoeGlxdGZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5ODU1NTQsImV4cCI6MjA5MzU2MTU1NH0.YYfQj88-rH7WdEHLvwNz2VOTYvnpRHI5psZvwUUSQxE",
             },
             body: JSON.stringify({ email: user.email }),
           }
