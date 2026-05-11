@@ -136,6 +136,24 @@ function OnboardingScreen({ onDone, currentUser }) {
         journey: data.journey || "self",
         partner_name: data.journey === "relationship" ? (data.partnerName || null) : null,
       }, { onConflict: "user_id" });
+
+      // Send welcome email — fire and forget
+      try {
+        await fetch(
+          "https://upqboifuvcqcxhxiqtfk.supabase.co/functions/v1/send-welcome",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({ email: user.email }),
+          }
+        );
+      } catch (err) {
+        // Fail silently — welcome email must not block onboarding
+        console.error("send-welcome failed:", err);
+      }
     }
     setSaving(false);
     onDone(data);
