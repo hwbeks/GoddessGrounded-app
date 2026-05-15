@@ -229,8 +229,8 @@ export default function ReflectTab({ currentUser }) {
                 Your reflections will gather here.
               </p>
               <p style={{ fontSize: 12, color: T.muted, lineHeight: 1.7 }}>
-                When something resonates on Home,
-                it joins this collection — organized by what it touches.
+                When a reflection on the Home tab resonates with you,
+                it's saved here in your own collection - gathered by theme.
               </p>
               <p style={{ fontSize: 12, color: T.muted, fontStyle: "italic", marginTop: 16 }}>
                 Nothing saved yet. That's perfectly fine.
