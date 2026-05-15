@@ -42,6 +42,22 @@ function getTodayQuestion() {
   return QUESTIONS[diff % QUESTIONS.length];
 }
 
+function formatRelativeDate(dateStr) {
+  const date = new Date(dateStr);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(date);
+  target.setHours(0, 0, 0, 0);
+  const diffDays = Math.floor((today - target) / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays < 14) return "Last week";
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
+
 const CATEGORY_LABELS = {
   self_connection: "Self connection",
   self_awareness: "Self awareness",
@@ -54,18 +70,19 @@ const CATEGORY_LABELS = {
   avoidance: "Avoidance",
 };
 
-export default function ReflectTab({ tips, onRateTip, currentUser }) {
-  const [tipRated, setTipRated] = useState(false);
+export default function ReflectTab({ currentUser }) {
   const [todayEntry, setTodayEntry] = useState(null);
   const [answer, setAnswer] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [section, setSection] = useState("tip"); // "tip" | "journal"
+  const [section, setSection] = useState("saved"); // "saved" | "journal"
+  const [savedTips, setSavedTips] = useState([]);
+  const [loadingSaved, setLoadingSaved] = useState(true);
 
   const todayQuestion = getTodayQuestion();
   const todayDate = new Date().toISOString().split("T")[0];
-  const tip = tips && tips.length > 0 ? tips[0] : null;
 
+  // Load today's journal entry
   useEffect(() => {
     async function loadEntry() {
       let user = currentUser;
@@ -89,6 +106,32 @@ export default function ReflectTab({ tips, onRateTip, currentUser }) {
     }
     loadEntry();
   }, [currentUser, todayDate]);
+
+  // Load saved tips
+  useEffect(() => {
+    async function loadSavedTips() {
+      let user = currentUser;
+      if (!user) {
+        const { data: { user: freshUser } } = await supabase.auth.getUser();
+        user = freshUser;
+      }
+      if (!user) {
+        setLoadingSaved(false);
+        return;
+      }
+
+      const { data } = await supabase
+        .from("seen_tips")
+        .select("seen_at, tips(id, content, category_tag)")
+        .eq("user_id", user.id)
+        .eq("rating", "up")
+        .order("seen_at", { ascending: false });
+
+      setSavedTips(data || []);
+      setLoadingSaved(false);
+    }
+    loadSavedTips();
+  }, [currentUser]);
 
   async function saveEntry() {
     if (!answer.trim()) return;
@@ -119,6 +162,19 @@ export default function ReflectTab({ tips, onRateTip, currentUser }) {
     setTimeout(() => setSaved(false), 2500);
   }
 
+  // Group saved tips by category
+  const tipsByCategory = savedTips.reduce((acc, item) => {
+    if (!item.tips) return acc;
+    const cat = item.tips.category_tag || "uncategorized";
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push({
+      id: item.tips.id,
+      content: item.tips.content,
+      seen_at: item.seen_at,
+    });
+    return acc;
+  }, {});
+
   return (
     <div style={{ padding: "24px 24px 0" }}>
 
@@ -129,7 +185,7 @@ export default function ReflectTab({ tips, onRateTip, currentUser }) {
 
       {/* Section toggle */}
       <div style={{ display: "flex", gap: 0, border: `1px solid ${T.border}`, borderRadius: 8, overflow: "hidden", marginBottom: 24 }}>
-        {[{ id: "tip", label: "Today's tip" }, { id: "journal", label: "Reflect" }].map((s) => (
+        {[{ id: "saved", label: "Saved tips" }, { id: "journal", label: "My journal" }].map((s) => (
           <button
             key={s.id}
             onClick={() => setSection(s.id)}
@@ -153,82 +209,69 @@ export default function ReflectTab({ tips, onRateTip, currentUser }) {
         ))}
       </div>
 
-      {/* TIP SECTION */}
-      {section === "tip" && (
+      {/* SAVED TIPS SECTION */}
+      {section === "saved" && (
         <div>
-          {tip ? (
-            <div style={{ ...css.card, borderLeft: `3px solid ${T.accentLight}`, marginBottom: 16 }}>
-              <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: T.accentLight, marginBottom: 10 }}>
-                {CATEGORY_LABELS[tip.category_tag] || tip.category_tag}
-              </div>
+          {loadingSaved ? (
+            <div style={{ ...css.card, textAlign: "center", color: T.muted, fontSize: 13, padding: "24px 16px" }}>
+              Loading...
+            </div>
+          ) : savedTips.length === 0 ? (
+            <div style={{ ...css.card, textAlign: "center", padding: "32px 24px" }}>
+              <div style={{ fontSize: 28, marginBottom: 16 }}>🌿</div>
               <p style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontStyle: "italic",
-                fontSize: 20,
-                lineHeight: 1.6,
-                color: T.accentDark,
-                marginBottom: 20,
+                fontSize: 16,
+                lineHeight: 1.7,
+                color: T.text,
+                marginBottom: 12,
               }}>
-                {tip.content}
+                Your reflections will gather here.
               </p>
-
-              {!tipRated ? (
-                <div style={{ display: "flex", gap: 10 }}>
-                  <button
-                    onClick={() => { onRateTip("up"); setTipRated(true); }}
-                    style={{
-                      flex: 1,
-                      background: T.accentSoft,
-                      border: `1px solid ${T.border}`,
-                      borderRadius: 10,
-                      padding: "11px 8px",
-                      fontSize: 12,
-                      fontFamily: "'Jost', sans-serif",
-                      fontWeight: 500,
-                      letterSpacing: 1,
-                      color: T.accentDark,
-                      cursor: "pointer",
-                    }}
-                  >
-                    This resonates
-                  </button>
-                  <button
-                    onClick={() => { onRateTip("down"); setTipRated(true); }}
-                    style={{
-                      flex: 1,
-                      background: "transparent",
-                      border: `1px solid ${T.border}`,
-                      borderRadius: 10,
-                      padding: "11px 8px",
-                      fontSize: 12,
-                      fontFamily: "'Jost', sans-serif",
-                      fontWeight: 300,
-                      letterSpacing: 1,
-                      color: T.muted,
-                      cursor: "pointer",
-                    }}
-                  >
-                    Not for me
-                  </button>
-                </div>
-              ) : (
-                <div style={{ fontSize: 12, color: T.muted, textAlign: "center", letterSpacing: 2 }}>
-                  {tipRated === true ? "Thank you for your reflection." : ""}
-                </div>
-              )}
+              <p style={{ fontSize: 12, color: T.muted, lineHeight: 1.7 }}>
+                When something resonates on Home,
+                it joins this collection — organized by what it touches.
+              </p>
+              <p style={{ fontSize: 12, color: T.muted, fontStyle: "italic", marginTop: 16 }}>
+                Nothing saved yet. That's perfectly fine.
+              </p>
             </div>
           ) : (
-            <div style={{ ...css.card, textAlign: "center", color: T.muted, fontSize: 14, padding: "32px 24px" }}>
-              Your daily tip is on its way...
-            </div>
+            Object.entries(tipsByCategory).map(([category, items]) => (
+              <div key={category} style={{ marginBottom: 20 }}>
+                <div style={{
+                  fontSize: 10,
+                  letterSpacing: 3,
+                  textTransform: "uppercase",
+                  color: T.accentLight,
+                  marginBottom: 10,
+                  paddingLeft: 4,
+                }}>
+                  {CATEGORY_LABELS[category] || category} ({items.length})
+                </div>
+                {items.map((item) => (
+                  <div key={item.id} style={{
+                    ...css.card,
+                    borderLeft: `3px solid ${T.accentLight}`,
+                    marginBottom: 10,
+                  }}>
+                    <div style={{ fontSize: 11, color: T.muted, marginBottom: 8, letterSpacing: 1 }}>
+                      {formatRelativeDate(item.seen_at)}
+                    </div>
+                    <p style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: 16,
+                      lineHeight: 1.6,
+                      color: T.text,
+                      margin: 0,
+                    }}>
+                      {item.content}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ))
           )}
-
-          <button
-            onClick={() => setSection("journal")}
-            style={{ ...css.btnGhost, fontSize: 11, marginTop: 8 }}
-          >
-            Continue to today's reflection →
-          </button>
         </div>
       )}
 
