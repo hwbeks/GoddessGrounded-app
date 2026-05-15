@@ -545,16 +545,21 @@ function MainApp({ userData }) {
 
       {/* Tabs */}
       {tab === "home" && (
-        <ErrorBoundary>
-          <HomeTab
-            streak={streak}
-            weeklyRating={weeklyRating}
-            setWeeklyRating={setWeeklyRating}
-            onCheckIn={handleCheckIn}
-            setScoreVersion={setScoreVersion}
-          />
-        </ErrorBoundary>
-      )}
+  <ErrorBoundary>
+    <HomeTab
+      streak={streak}
+      weeklyRating={weeklyRating}
+      setWeeklyRating={setWeeklyRating}
+      onCheckIn={handleCheckIn}
+      setScoreVersion={setScoreVersion}
+      userData={userData}
+      tips={tips}
+      onRateTip={handleRateTip}
+      currentUser={currentUser}
+      assessment={assessment}
+    />
+  </ErrorBoundary>
+)}
 
       {tab === "reflect" && (
         <ErrorBoundary>
