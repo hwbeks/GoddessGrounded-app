@@ -562,14 +562,10 @@ function MainApp({ userData }) {
 )}
 
       {tab === "reflect" && (
-        <ErrorBoundary>
-          <ReflectTab
-            tips={tips}
-            onRateTip={handleRateTip}
-            currentUser={currentUser}
-          />
-        </ErrorBoundary>
-      )}
+  <ErrorBoundary>
+    <ReflectTab currentUser={currentUser} />
+  </ErrorBoundary>
+)}
 
       {tab === "forme" && (
         <ErrorBoundary>
