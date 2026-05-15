@@ -1,5 +1,6 @@
 import { T, css } from "../theme";
-import { useState } from "react";
+import { supabase } from "../supabase";
+import { useState, useEffect } from "react";
 
 const QUOTES = [
   "You don't have to lose yourself to love someone.",
@@ -58,9 +59,36 @@ export default function HomeTab({
   onRateTip,
   currentUser,
   assessment,
+  setTab,
 }) {
   const [showCheckIn, setShowCheckIn] = useState(false);
   const [tipRated, setTipRated] = useState(false);
+  const [todayTipRated, setTodayTipRated] = useState(null);
+
+  // Check on mount whether user has already rated a tip today
+  useEffect(() => {
+    async function checkTodayRating() {
+      if (!currentUser) {
+        setTodayTipRated(false);
+        return;
+      }
+
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const { data } = await supabase
+        .from("seen_tips")
+        .select("id")
+        .eq("user_id", currentUser.id)
+        .not("rating", "is", null)
+        .gte("seen_at", startOfDay.toISOString())
+        .limit(1)
+        .maybeSingle();
+
+      setTodayTipRated(!!data);
+    }
+    checkTodayRating();
+  }, [currentUser, tipRated]);
 
   async function handleCheckIn(val) {
     setWeeklyRating(val);
@@ -123,8 +151,8 @@ export default function HomeTab({
         </div>
       </div>
 
-      {/* Daily tip with rating */}
-      {todayTip && !tipRated && (
+      {/* Daily tip with rating — only if not yet rated today */}
+      {todayTip && todayTipRated === false && (
         <div style={{ ...css.card, marginBottom: 24 }}>
           <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: T.muted, marginBottom: 12 }}>
             Today's reflection
@@ -180,12 +208,46 @@ export default function HomeTab({
         </div>
       )}
 
-      {/* Tip just rated — soft confirmation */}
-      {todayTip && tipRated && (
-        <div style={{ ...css.card, marginBottom: 24, textAlign: "center" }}>
-          <div style={{ fontSize: 12, color: T.muted, fontStyle: "italic", lineHeight: 1.6 }}>
-            Thank you for noticing.
+      {/* Persistent post-rating card — shown when today's tip is rated */}
+      {todayTipRated === true && (
+        <div style={{ ...css.card, marginBottom: 24, textAlign: "center", padding: "24px 20px" }}>
+          <div style={{ fontSize: 22, marginBottom: 12 }}>🌿</div>
+          <div style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontStyle: "italic",
+            fontSize: 16,
+            color: T.text,
+            lineHeight: 1.6,
+            marginBottom: 16,
+          }}>
+            Today's reflection has been with you.
           </div>
+          <div style={{
+            fontSize: 12,
+            color: T.muted,
+            lineHeight: 1.7,
+            marginBottom: 16,
+          }}>
+            What resonates is saved to your reflections,
+            ready when you want to return.
+          </div>
+          <button
+            onClick={() => setTab && setTab("reflect")}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: T.accent,
+              fontSize: 12,
+              fontFamily: "'Jost', sans-serif",
+              letterSpacing: 1,
+              cursor: "pointer",
+              padding: "8px 16px",
+              textDecoration: "underline",
+              textUnderlineOffset: 3,
+            }}
+          >
+            View your reflections →
+          </button>
         </div>
       )}
 
