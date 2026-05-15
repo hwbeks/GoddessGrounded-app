@@ -11,11 +11,40 @@ const QUOTES = [
   "You didn't become the easy one all at once. You can come back, one moment at a time.",
 ];
 
+const CATEGORY_LABELS = {
+  self_connection: "self connection",
+  self_awareness: "self awareness",
+  naming_needs: "naming your needs",
+  boundaries: "boundaries",
+  identity: "your sense of self",
+  presence: "presence",
+};
+
 function getTodayQuote() {
   const start = new Date("2026-01-01");
   const today = new Date();
   const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
   return QUOTES[diff % QUOTES.length];
+}
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
+
+function getWeakestCategory(assessment) {
+  if (!assessment) return null;
+  const scores = [
+    { key: "self_connection", score: assessment.self_connection || 3 },
+    { key: "self_awareness", score: assessment.self_awareness || 3 },
+    { key: "naming_needs", score: assessment.naming_needs || 3 },
+    { key: "boundaries", score: assessment.boundaries || 3 },
+    { key: "identity", score: assessment.identity || 3 },
+    { key: "presence", score: assessment.presence || 3 },
+  ].sort((a, b) => a.score - b.score);
+  return scores[0].key;
 }
 
 export default function HomeTab({
@@ -24,8 +53,14 @@ export default function HomeTab({
   setWeeklyRating,
   onCheckIn,
   setScoreVersion,
+  userData,
+  tips,
+  onRateTip,
+  currentUser,
+  assessment,
 }) {
   const [showCheckIn, setShowCheckIn] = useState(false);
+  const [tipRated, setTipRated] = useState(false);
 
   async function handleCheckIn(val) {
     setWeeklyRating(val);
@@ -34,13 +69,37 @@ export default function HomeTab({
     setScoreVersion((v) => v + 1);
   }
 
+  async function handleRateTip(tipId, rating) {
+    await onRateTip(tipId, rating);
+    setTipRated(true);
+  }
+
   const todayQuote = getTodayQuote();
   const today = new Date().toLocaleDateString("en-GB", {
     weekday: "long", day: "numeric", month: "long"
   });
+  const greeting = getGreeting();
+  const name = userData?.name || null;
+  const weakestCategory = getWeakestCategory(assessment);
+  const todayTip = tips && tips.length > 0 ? tips[0] : null;
 
   return (
     <div style={{ padding: "0 24px 24px" }}>
+
+      {/* Personal greeting */}
+      {name && (
+        <div style={{ marginBottom: 8 }}>
+          <div style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontStyle: "italic",
+            fontSize: 22,
+            color: T.accentDark,
+            lineHeight: 1.3,
+          }}>
+            {greeting}, {name}
+          </div>
+        </div>
+      )}
 
       {/* Date */}
       <div style={{ fontSize: 11, color: T.muted, letterSpacing: 2, marginBottom: 32 }}>
@@ -63,6 +122,72 @@ export default function HomeTab({
           GoddessGrounded
         </div>
       </div>
+
+      {/* Daily tip with rating */}
+      {todayTip && !tipRated && (
+        <div style={{ ...css.card, marginBottom: 24 }}>
+          <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: T.muted, marginBottom: 12 }}>
+            Today's reflection
+          </div>
+          <p style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 18,
+            lineHeight: 1.6,
+            color: T.text,
+            marginBottom: 16,
+          }}>
+            {todayTip.content}
+          </p>
+          {weakestCategory && CATEGORY_LABELS[weakestCategory] && (
+            <div style={{ fontSize: 11, color: T.muted, fontStyle: "italic", marginBottom: 16, lineHeight: 1.5 }}>
+              From your reflection — {CATEGORY_LABELS[weakestCategory]}
+            </div>
+          )}
+          <div style={{ display: "flex", gap: 10 }}>
+            <button
+              onClick={() => handleRateTip(todayTip.id, "up")}
+              style={{
+                flex: 1,
+                background: T.warm,
+                border: `1px solid ${T.accentLight}`,
+                borderRadius: 10,
+                padding: "10px 14px",
+                fontSize: 12,
+                color: T.accent,
+                cursor: "pointer",
+                fontFamily: "'Jost', sans-serif",
+              }}
+            >
+              This resonates
+            </button>
+            <button
+              onClick={() => handleRateTip(todayTip.id, "down")}
+              style={{
+                flex: 1,
+                background: "transparent",
+                border: `1px solid ${T.border}`,
+                borderRadius: 10,
+                padding: "10px 14px",
+                fontSize: 12,
+                color: T.muted,
+                cursor: "pointer",
+                fontFamily: "'Jost', sans-serif",
+              }}
+            >
+              Not for me
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Tip just rated — soft confirmation */}
+      {todayTip && tipRated && (
+        <div style={{ ...css.card, marginBottom: 24, textAlign: "center" }}>
+          <div style={{ fontSize: 12, color: T.muted, fontStyle: "italic", lineHeight: 1.6 }}>
+            Thank you for noticing.
+          </div>
+        </div>
+      )}
 
       {/* Weekly check-in — only if not done */}
       {!weeklyRating && (
