@@ -557,6 +557,7 @@ function MainApp({ userData }) {
       onRateTip={handleRateTip}
       currentUser={currentUser}
       assessment={assessment}
+      setTab={setTab}
     />
   </ErrorBoundary>
 )}
