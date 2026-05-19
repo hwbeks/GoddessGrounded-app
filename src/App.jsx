@@ -360,6 +360,7 @@ function MainApp({ userData }) {
   const [notifyTipEmail, setNotifyTipEmail] = useState(false);
   const [journey, setJourney] = useState(userData?.journey || "self");
   const [partnerName, setPartnerName] = useState(userData?.partnerName || null);
+  const [showTheCode, setShowTheCode] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -585,6 +586,8 @@ function MainApp({ userData }) {
             streak={streak}
             longestStreak={longestStreak}
             currentUser={currentUser}
+            showTheCode={showTheCode}
+            setShowTheCode={setShowTheCode}
           />
         </ErrorBoundary>
       )}
@@ -599,6 +602,8 @@ function MainApp({ userData }) {
             setJourney={setJourney}
             partnerName={partnerName}
             setPartnerName={setPartnerName}
+            showTheCode={showTheCode}
+            setShowTheCode={setShowTheCode}
           />
         </ErrorBoundary>
       )}
