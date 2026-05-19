@@ -1,5 +1,6 @@
 import { T, css } from "../theme";
 import { supabase } from "../supabase";
+import TheCode from "./TheCode";
 
 const ZONES = [
   { min: 80, label: "Deeply rooted", desc: "You are strongly connected to yourself. Keep nurturing that.", emoji: "🌳" },
@@ -17,7 +18,7 @@ const DIMENSIONS = [
   { key: "presence", label: "Presence" },
 ];
 
-export default function GroundTab({ score, scoreLoaded, assessment, streak, longestStreak, currentUser }) {
+export default function GroundTab({ score, scoreLoaded, assessment, streak, longestStreak, currentUser, showTheCode, setShowTheCode }) {
   const zone = ZONES.find((z) => score >= z.min) || ZONES[ZONES.length - 1];
   const scoreColor =
     score >= 80 ? T.green : score >= 60 ? T.accent : score >= 40 ? T.accentLight : T.muted;
@@ -142,6 +143,9 @@ export default function GroundTab({ score, scoreLoaded, assessment, streak, long
           Modern relationship therapy
         </div>
       </div>
+     {/* The Code */}
+      <TheCode showTheCode={showTheCode} setShowTheCode={setShowTheCode} />
+      
     </div>
   );
 }
