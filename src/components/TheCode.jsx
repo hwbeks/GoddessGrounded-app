@@ -1,4 +1,4 @@
-import { T } from "../theme";
+import { T, css } from "../theme";
 
 export default function TheCode({ showTheCode, setShowTheCode }) {
   const content = [
@@ -29,23 +29,79 @@ export default function TheCode({ showTheCode, setShowTheCode }) {
 
   if (!showTheCode) {
     return (
-      <div style={{ textAlign: "center", paddingTop: 24, paddingBottom: 80 }}>
-        <span onClick={() => setShowTheCode(true)} style={{ fontSize: 11, color: T.muted, cursor: "pointer", letterSpacing: 1 }}>· The Code</span>
+      <div style={{ textAlign: "center", paddingTop: 24, paddingBottom: 40 }}>
+        <span 
+          onClick={() => setShowTheCode(true)} 
+          style={{ 
+            fontSize: 11, 
+            color: T.muted, 
+            cursor: "pointer", 
+            letterSpacing: 2,
+            textTransform: "uppercase"
+          }}
+        >
+          · The Code
+        </span>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: "32px 8px 16px", textAlign: "center" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-        <div style={{ fontSize: 11, color: T.accent, letterSpacing: 2, textTransform: "uppercase" }}>The Code</div>
-        <span onClick={() => setShowTheCode(false)} style={{ fontSize: 11, color: T.muted, cursor: "pointer", letterSpacing: 1 }}>✕ close</span>
+    <div style={{ padding: "24px 8px 40px" }}>
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "space-between", 
+        alignItems: "center", 
+        marginBottom: 24 
+      }}>
+        <div style={{ 
+          fontSize: 10, 
+          color: T.accentDark, 
+          letterSpacing: 5, 
+          textTransform: "uppercase" 
+        }}>
+          The Code
+        </div>
+        <span 
+          onClick={() => setShowTheCode(false)} 
+          style={{ 
+            fontSize: 11, 
+            color: T.muted, 
+            cursor: "pointer", 
+            letterSpacing: 1 
+          }}
+        >
+          ✕ close
+        </span>
       </div>
+      
       {content.map(([num, title, body]) => (
-        <div key={num} style={{ marginBottom: 24, textAlign: "left" }}>
-          <div style={{ fontSize: 10, color: T.muted, letterSpacing: 2 }}>{num}</div>
-          <div style={{ fontSize: 13, color: T.accent, fontStyle: "italic", marginBottom: 6 }}>{title}</div>
-          <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.6 }}>{body}</div>
+        <div key={num} style={{ marginBottom: 28 }}>
+          <div style={{ 
+            fontSize: 10, 
+            color: T.muted, 
+            letterSpacing: 3,
+            marginBottom: 4
+          }}>
+            {num}
+          </div>
+          <div style={{ 
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 18, 
+            color: T.accentDark, 
+            fontStyle: "italic", 
+            lineHeight: 1.4,
+            marginBottom: 10 
+          }}>
+            {title}
+          </div>
+          <div style={{ 
+            fontSize: 13, 
+            color: T.muted, 
+            lineHeight: 1.7 
+          }}>
+            {body}
+          </div>
         </div>
       ))}
     </div>
