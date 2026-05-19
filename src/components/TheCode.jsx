@@ -1,4 +1,4 @@
-import { T, css } from "../theme";
+import { T } from "../theme";
 
 export default function TheCode({ showTheCode, setShowTheCode }) {
   const content = [
