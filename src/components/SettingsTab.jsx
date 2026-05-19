@@ -1,8 +1,9 @@
 import { T, css } from "../theme";
 import { supabase } from "../supabase";
 import { useState } from "react";
+import TheCode from "./TheCode";
 
-export default function SettingsTab({ currentUser, notifyTipEmail, setNotifyTipEmail, journey, setJourney, partnerName, setPartnerName }) {
+export default function SettingsTab({ currentUser, notifyTipEmail, setNotifyTipEmail, journey, setJourney, partnerName, setPartnerName, showTheCode, setShowTheCode }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -247,6 +248,9 @@ export default function SettingsTab({ currentUser, notifyTipEmail, setNotifyTipE
           </div>
         </div>
       )}
+      {/* The Code */}
+      <TheCode showTheCode={showTheCode} setShowTheCode={setShowTheCode} />
+      
     </div>
   );
 }
