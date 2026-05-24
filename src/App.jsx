@@ -16,6 +16,7 @@ function LoginScreen() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showFirstAidKit, setShowFirstAidKit] = useState(false);
 
   async function sendMagicLink() {
     if (!email) return;
@@ -559,6 +560,8 @@ function MainApp({ userData }) {
       currentUser={currentUser}
       assessment={assessment}
       setTab={setTab}
+      showFirstAidKit={showFirstAidKit}
+      setShowFirstAidKit={setShowFirstAidKit}
     />
   </ErrorBoundary>
 )}
