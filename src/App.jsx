@@ -16,8 +16,7 @@ function LoginScreen() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [showFirstAidKit, setShowFirstAidKit] = useState(false);
-
+ 
   async function sendMagicLink() {
     if (!email) return;
     setLoading(true);
@@ -362,6 +361,7 @@ function MainApp({ userData }) {
   const [journey, setJourney] = useState(userData?.journey || "self");
   const [partnerName, setPartnerName] = useState(userData?.partnerName || null);
   const [showTheCode, setShowTheCode] = useState(false);
+  const [showFirstAidKit, setShowFirstAidKit] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
