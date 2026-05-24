@@ -315,7 +315,7 @@ export default function FirstAidKit({ showFirstAidKit, setShowFirstAidKit }) {
       </div>
 
       <div style={{ fontSize: 13, color: T.text, lineHeight: 1.8, marginBottom: 14 }}>
-        And so the friction comes. Maybe because you've been carrying too much for too long, and something finally cracks. Maybe because you're starting to take up more space, and he doesn't yet know what to do with that. Maybe because patterns between you — old, well-practiced — keep pulling you back into the same loop. The crisis isn't a failure of your work. It's the place where the work has to happen between two people instead of one.
+        And so the friction may come. Maybe because you've been carrying too much for too long, and something finally cracks. Maybe because you're starting to take up more space, and he doesn't yet know what to do with that. Maybe because patterns between you — old, well-practiced — keep pulling you back into the same loop. The crisis isn't a failure of your work. It's the place where the work has to happen between two people instead of one.
       </div>
 
       <div style={{ fontSize: 13, color: T.text, lineHeight: 1.8, marginBottom: 14 }}>
