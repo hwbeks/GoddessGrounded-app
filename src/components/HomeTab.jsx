@@ -1,6 +1,7 @@
 import { T, css } from "../theme";
 import { supabase } from "../supabase";
 import { useState, useEffect } from "react";
+import FirstAidKit from "./FirstAidKit";
 
 const QUOTES = [
   "You don't have to lose yourself to love someone.",
@@ -60,6 +61,8 @@ export default function HomeTab({
   currentUser,
   assessment,
   setTab,
+  showFirstAidKit,
+  setShowFirstAidKit,
 }) {
   const [showCheckIn, setShowCheckIn] = useState(false);
   const [tipRated, setTipRated] = useState(false);
@@ -333,6 +336,10 @@ export default function HomeTab({
           </div>
         </div>
       )}
+
+      {/* First Aid Kit */}
+      <FirstAidKit showFirstAidKit={showFirstAidKit} setShowFirstAidKit={setShowFirstAidKit} />
+
     </div>
   );
 }
